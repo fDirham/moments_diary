@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/screens/new_note_screen.dart';
+import 'package:moments_diary/widgets/home_header.dart';
 import 'package:moments_diary/widgets/note_list.dart';
 import 'package:provider/provider.dart';
 
@@ -62,37 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         length: 2,
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Diary",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
-                    Text(
-                      currDayStr,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            HomeHeader(currDayStr: currDayStr),
             TabBar(tabs: [Tab(text: "List"), Tab(text: "Calendar")]),
             Expanded(
               child: TabBarView(

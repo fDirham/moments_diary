@@ -21,11 +21,14 @@ class _NoteListRowState extends State<NoteListRow> {
     ).format(currNote.createdAt);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(currNote.content, style: const TextStyle(fontSize: 16)),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(currNote.content, style: const TextStyle(fontSize: 16)),
+          ),
           Align(
             alignment: Alignment.bottomRight,
             child: Text(
