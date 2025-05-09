@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/screens/new_note_screen.dart';
 import 'package:moments_diary/widgets/note_list.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,16 +13,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  void readNotes() {
+    context.read<NoteDatabase>().fetchNotes();
+  }
+
   void createNote() {
-    // Function to create a new note
-    // This is where you would implement the logic to create a new note
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (context) => const NewNoteScreen()));
   }
 
   @override
+  void initState() {
+    super.initState();
+    readNotes();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    String currDayStr = DateFormat.MMMd(
+      Intl.getCurrentLocale(),
+    ).format(DateTime.now());
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -66,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Text(
-                      "May 4",
+                      currDayStr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

@@ -13,10 +13,9 @@ class _NewNoteScreenState extends State<NewNoteScreen> {
   final TextEditingController _noteController =
       TextEditingController(); // Add a controller
 
-  late final NoteDatabase noteDB = context.read<NoteDatabase>();
-
   void _saveNote() {
     // Save the note to the database
+    final NoteDatabase noteDB = context.read<NoteDatabase>();
     noteDB.addNote(_noteController.text);
     Navigator.of(context).pop(); // Close the screen after saving
   }
@@ -42,7 +41,7 @@ class _NewNoteScreenState extends State<NewNoteScreen> {
         title: const Text("New Note"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.add),
             onPressed: _saveNote, // Save the note when the button is pressed
           ),
         ],
@@ -60,6 +59,10 @@ class _NewNoteScreenState extends State<NewNoteScreen> {
                 keyboardType: TextInputType.multiline, // Enable multiline input
                 onSubmitted:
                     (value) => _saveNote(), // Save the note on submission
+                decoration: const InputDecoration(
+                  border: InputBorder.none, // Remove the bottom border
+                  hintText: "New note...", // Optional: Add a placeholder
+                ),
               ),
             ),
           ],

@@ -30,7 +30,9 @@ class NoteDatabase extends ChangeNotifier {
 
   // Get notes
   Future<void> fetchNotes() async {
-    List<Note> fetched = await isar.notes.where().findAll();
+    List<Note> fetched =
+        await isar.notes.where().sortByCreatedAtDesc().findAll();
+
     currentNotes.clear();
     currentNotes.addAll(fetched);
     notifyListeners();

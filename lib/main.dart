@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/find_locale.dart';
 import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/screens/home_screen.dart';
 import 'package:moments_diary/theme/theme.dart';
@@ -9,6 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NoteDatabase.initialize();
 
+  await findSystemLocale();
   runApp(
     ChangeNotifierProvider(
       create: (context) => NoteDatabase(),
