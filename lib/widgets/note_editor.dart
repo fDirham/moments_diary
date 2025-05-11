@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:moments_diary/models/note.dart';
+import 'package:moments_diary/utils.dart';
 
 class NoteEditor extends StatefulWidget {
   final void Function(String newText) onSave;
@@ -20,6 +22,7 @@ class NoteEditor extends StatefulWidget {
 class _NoteEditorState extends State<NoteEditor> {
   final TextEditingController _noteController =
       TextEditingController(); // Add a controller
+  DateTime createdAt = DateTime.now();
 
   void _saveNote() {
     widget.onSave(_noteController.text);
@@ -30,6 +33,10 @@ class _NoteEditorState extends State<NoteEditor> {
     super.initState();
     // Initialize the controller with an empty string
     _noteController.text = widget.startingNote?.content ?? "";
+
+    if (widget.startingNote != null) {
+      createdAt = widget.startingNote!.createdAt;
+    }
   }
 
   @override
@@ -41,9 +48,15 @@ class _NoteEditorState extends State<NoteEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final timeCreated = DateFormat.jm(
+      Intl.getCurrentLocale(),
+    ).format(createdAt);
+    final dayCreated = getRelativeDayDisplay(createdAt);
+    final createdAtText = '$dayCreated - $timeCreated';
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title), // Set the title of the AppBar
+        // title: Text(widget.title), // Set the title of the AppBar
         actions: [
           TextButton(
             onPressed: _saveNote,
@@ -62,6 +75,10 @@ class _NoteEditorState extends State<NoteEditor> {
         padding: const EdgeInsets.all(12), // Add padding around the TextField
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Row(children: [Text(createdAtText)]),
+            ),
             Expanded(
               child: TextField(
                 controller: _noteController, // Assign the controller

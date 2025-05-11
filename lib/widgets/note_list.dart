@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:intl/intl.dart';
 import 'package:moments_diary/models/note.dart';
 import 'package:moments_diary/models/note_database.dart';
+import 'package:moments_diary/utils.dart';
 import 'package:moments_diary/widgets/note_list_group_header.dart';
 import 'package:moments_diary/widgets/note_list_row.dart';
 import 'package:provider/provider.dart';
@@ -17,27 +17,15 @@ class NoteList extends StatefulWidget {
 class _NoteListState extends State<NoteList> {
   List<Map<String, dynamic>> putNotesIntoGroups(List<Note> notes) {
     List<Map<String, dynamic>> groupedNotes = [];
-    final DateTime now = DateTime.now();
-    final DateTime today = DateTime(now.year, now.month, now.day);
-    final DateTime yesterday = today.subtract(const Duration(days: 1));
 
     for (final note in notes) {
+      String groupLabel = getRelativeDayDisplay(note.createdAt);
+
       final DateTime dateWithoutTime = DateTime(
         note.createdAt.year,
         note.createdAt.month,
         note.createdAt.day,
       );
-
-      String groupLabel;
-      if (dateWithoutTime == today) {
-        groupLabel = "Today";
-      } else if (dateWithoutTime == yesterday) {
-        groupLabel = "Yesterday";
-      } else {
-        groupLabel = DateFormat.MMMd(
-          Intl.getCurrentLocale(),
-        ).format(note.createdAt);
-      }
 
       final int groupSort = dateWithoutTime.millisecondsSinceEpoch;
 
