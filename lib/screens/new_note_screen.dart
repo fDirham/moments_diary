@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moments_diary/models/note_database.dart';
+import 'package:moments_diary/widgets/note_editor.dart';
 import 'package:provider/provider.dart';
 
 class NewNoteScreen extends StatefulWidget {
@@ -10,64 +11,15 @@ class NewNoteScreen extends StatefulWidget {
 }
 
 class _NewNoteScreenState extends State<NewNoteScreen> {
-  final TextEditingController _noteController =
-      TextEditingController(); // Add a controller
-
-  void _saveNote() {
+  void saveNote(String newText) {
     // Save the note to the database
     final NoteDatabase noteDB = context.read<NoteDatabase>();
-    noteDB.addNote(_noteController.text);
+    noteDB.addNote(newText);
     Navigator.of(context).pop(); // Close the screen after saving
   }
 
   @override
-  void initState() {
-    super.initState();
-    // Initialize the controller with an empty string
-    _noteController.text = "";
-  }
-
-  @override
-  void dispose() {
-    _noteController
-        .dispose(); // Dispose of the controller when the widget is removed
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("New Note"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _saveNote, // Save the note when the button is pressed
-          ),
-        ],
-      ),
-
-      body: Padding(
-        padding: const EdgeInsets.all(12), // Add padding around the TextField
-        child: Column(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _noteController, // Assign the controller
-                maxLines: null, // Allow unlimited lines
-                expands: true, // Make the TextField fill the available space
-                keyboardType: TextInputType.multiline, // Enable multiline input
-                onSubmitted:
-                    (value) => _saveNote(), // Save the note on submission
-                decoration: const InputDecoration(
-                  border: InputBorder.none, // Remove the bottom border
-                  hintText: "New note...", // Optional: Add a placeholder
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return NoteEditor(title: "New", onSave: saveNote);
   }
 }
