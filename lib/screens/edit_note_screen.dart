@@ -13,10 +13,24 @@ class EditNoteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     void saveNote(String newText) {
       final NoteDatabase noteDB = context.read<NoteDatabase>();
+
+      if (newText.isEmpty) {
+        noteDB.deleteNote(note.id);
+        return;
+      }
+
       noteDB.updateNote(note.id, newText);
-      Navigator.of(context).pop(); // Close the screen after saving
     }
 
-    return NoteEditor(title: "Edit", onSave: saveNote, startingNote: note);
+    void deleteNote() {
+      final NoteDatabase noteDB = context.read<NoteDatabase>();
+      noteDB.deleteNote(note.id);
+    }
+
+    return NoteEditor(
+      onSave: saveNote,
+      onDelete: deleteNote,
+      startingNote: note,
+    );
   }
 }

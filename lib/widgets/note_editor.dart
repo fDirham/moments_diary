@@ -5,14 +5,14 @@ import 'package:moments_diary/utils.dart';
 
 class NoteEditor extends StatefulWidget {
   final void Function(String newText) onSave;
+  final void Function() onDelete;
   final Note? startingNote;
-  final String title;
 
   const NoteEditor({
     super.key,
     required this.onSave,
+    required this.onDelete,
     this.startingNote,
-    required this.title,
   });
 
   @override
@@ -25,7 +25,11 @@ class _NoteEditorState extends State<NoteEditor> {
   DateTime createdAt = DateTime.now();
 
   void _saveNote() {
-    widget.onSave(_noteController.text);
+    widget.onSave(_noteController.text); // Call the onSave function
+  }
+
+  void _deleteNote() {
+    widget.onDelete(); // Call the onDelete function
   }
 
   @override
@@ -58,42 +62,64 @@ class _NoteEditorState extends State<NoteEditor> {
       appBar: AppBar(
         // title: Text(widget.title), // Set the title of the AppBar
         actions: [
-          TextButton(
-            onPressed: _saveNote,
-            child: Text(
-              "save",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 16,
-              ),
-            ),
+          IconButton(
+            onPressed: () {
+              Navigator.pop(context, {
+                "delete": true,
+              }); // Close the screen after deletion
+            },
+            icon: Icon(Icons.delete),
           ),
         ],
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(12), // Add padding around the TextField
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Row(children: [Text(createdAtText)]),
-            ),
-            Expanded(
-              child: TextField(
-                controller: _noteController, // Assign the controller
-                maxLines: null, // Allow unlimited lines
-                expands: true, // Make the TextField fill the available space
-                keyboardType: TextInputType.multiline, // Enable multiline input
-                onSubmitted:
-                    (value) => _saveNote(), // Save the note on submission
-                decoration: const InputDecoration(
-                  border: InputBorder.none, // Remove the bottom border
-                  hintText: "New note...", // Optional: Add a placeholder
+      body: PopScope(
+        onPopInvokedWithResult: (bool result, dynamic data) {
+          if (result == true) {
+            if (data != null && data['delete'] == true) {
+              _deleteNote(); // Delete the note when the user pops the screen
+            } else {
+              _saveNote(); // Save the note when the user pops the screen
+            }
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12), // Add padding around the TextField
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Row(
+                  children: [
+                    Text(
+                      createdAtText,
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withAlpha(80),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: TextField(
+                  controller: _noteController, // Assign the controller
+                  maxLines: null, // Allow unlimited lines
+                  expands: true, // Make the TextField fill the available space
+                  keyboardType:
+                      TextInputType.multiline, // Enable multiline input
+                  onSubmitted:
+                      (value) => _saveNote(), // Save the note on submission
+                  decoration: const InputDecoration(
+                    border: InputBorder.none, // Remove the bottom border
+                    hintText: "New note...", // Optional: Add a placeholder
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -12,14 +12,21 @@ class NewNoteScreen extends StatefulWidget {
 
 class _NewNoteScreenState extends State<NewNoteScreen> {
   void saveNote(String newText) {
+    if (newText.isEmpty) {
+      return;
+    }
+
     // Save the note to the database
     final NoteDatabase noteDB = context.read<NoteDatabase>();
     noteDB.addNote(newText);
-    Navigator.of(context).pop(); // Close the screen after saving
+  }
+
+  void deleteNote() {
+    return;
   }
 
   @override
   Widget build(BuildContext context) {
-    return NoteEditor(title: "New", onSave: saveNote);
+    return NoteEditor(onSave: saveNote, onDelete: deleteNote);
   }
 }

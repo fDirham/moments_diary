@@ -1,6 +1,6 @@
 name: moments_diary
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -14,10 +14,8 @@ dependencies:
   intl: ^0.20.2
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
-  just_audio: ^0.10.2
   path_provider: ^2.1.5
   provider: ^6.1.5
-  record: ^6.0.0
 
 dev_dependencies:
   flutter_test:
