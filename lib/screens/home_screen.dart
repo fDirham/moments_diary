@@ -60,38 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              ListTile(title: const Text('Menu')),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const SettingsScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.question_answer),
-                title: const Text('Reflection Prompts'),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ReflectionPromptsScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+      drawer: MenuDrawer(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -103,13 +72,99 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             HomeHeader(currDayStr: currDayStr),
-            TabBar(tabs: [Tab(text: "List"), Tab(text: "Calendar")]),
+            CustomTabBar(),
             Expanded(
               child: TabBarView(
                 children: [NoteList(), Center(child: Text("Calendar Content"))],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class MenuDrawer extends StatelessWidget {
+  const MenuDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            ListTile(title: const Text('Menu')),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.question_answer),
+              title: const Text('Reflection Prompts'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ReflectionPromptsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomTabBar extends StatelessWidget {
+  const CustomTabBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 8.0,
+            right: 8.0,
+            top: 4,
+            bottom: 4,
+          ),
+          child: TabBar(
+            labelColor: Theme.of(context).colorScheme.primary,
+            unselectedLabelColor: Theme.of(context).colorScheme.onSurface,
+            // tabAlignment: TabAlignment.start,
+            dividerColor: Colors.transparent,
+            indicatorSize: TabBarIndicatorSize.label,
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2.0,
+              ),
+              insets: const EdgeInsets.symmetric(horizontal: 32),
+            ),
+            tabs: [
+              SizedBox(width: 80, child: Align(child: Tab(text: "List"))),
+              SizedBox(width: 80, child: Align(child: Tab(text: "Calendar"))),
+            ],
+          ),
         ),
       ),
     );
