@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/find_locale.dart';
 import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/screens/home_screen.dart';
+import 'package:moments_diary/screens/reminders_screen.dart'; // Add this import
 import 'package:moments_diary/theme/theme.dart';
 import 'package:moments_diary/theme/util.dart';
 import 'package:moments_diary/utils.dart';
@@ -73,6 +74,11 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int currentPageIndex = 0;
 
+  final List<Widget> screens = [
+    HomeScreen(),
+    RemindersScreen(), // Add your RemindersScreen here
+  ];
+
   @override
   Widget build(BuildContext context) {
     final brightness = View.of(context).platformDispatcher.platformBrightness;
@@ -85,7 +91,24 @@ class _MainAppState extends State<MainApp> {
         theme: brightness == Brightness.light ? theme.light() : theme.dark(),
         darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
         themeMode: ThemeMode.system,
-        home: HomeScreen(),
+        home: Scaffold(
+          body: screens[currentPageIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: currentPageIndex,
+            onTap: (index) {
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.alarm),
+                label: 'Reminders',
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
