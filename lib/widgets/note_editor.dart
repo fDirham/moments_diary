@@ -32,6 +32,22 @@ class _NoteEditorState extends State<NoteEditor> {
     widget.onDelete(); // Call the onDelete function
   }
 
+  Future<void> _handleReflect() async {
+    final prompts = "${(await getReflectionPrompts()).join("\n\n\n")}\n";
+    _noteController.text = prompts;
+
+    final firstNewline = prompts.indexOf('\n');
+    if (firstNewline != -1) {
+      _noteController.selection = TextSelection.collapsed(
+        offset: firstNewline + 1,
+      );
+    } else {
+      _noteController.selection = TextSelection.collapsed(
+        offset: prompts.length,
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +57,11 @@ class _NoteEditorState extends State<NoteEditor> {
     if (widget.startingNote != null) {
       createdAt = widget.startingNote!.createdAt;
     }
+
+    _noteController.addListener(() {
+      // Listen for changes in the text field
+      setState(() {}); // Update the state when the text changes
+    });
   }
 
   @override
@@ -57,6 +78,8 @@ class _NoteEditorState extends State<NoteEditor> {
     ).format(createdAt);
     final dayCreated = getRelativeDayDisplay(createdAt);
     final createdAtText = '$dayCreated - $timeCreated';
+    final showReflectionsButton =
+        widget.startingNote == null && _noteController.text.isEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -72,7 +95,6 @@ class _NoteEditorState extends State<NoteEditor> {
           ),
         ],
       ),
-
       body: PopScope(
         onPopInvokedWithResult: (bool result, dynamic data) {
           if (result == true) {
@@ -83,43 +105,59 @@ class _NoteEditorState extends State<NoteEditor> {
             }
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.all(12), // Add padding around the TextField
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Row(
-                  children: [
-                    Text(
-                      createdAtText,
-                      style: TextStyle(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withAlpha(80),
-                        fontSize: 14,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(
+                12,
+              ), // Add padding around the TextField
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Row(
+                      children: [
+                        Text(
+                          createdAtText,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withAlpha(80),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _noteController, // Assign the controller
+                      maxLines: null, // Allow unlimited lines
+                      expands:
+                          true, // Make the TextField fill the available space
+                      keyboardType:
+                          TextInputType.multiline, // Enable multiline input
+                      onSubmitted:
+                          (value) => _saveNote(), // Save the note on submission
+                      decoration: const InputDecoration(
+                        border: InputBorder.none, // Remove the bottom border
+                        hintText: "New note...", // Optional: Add a placeholder
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _noteController, // Assign the controller
-                  maxLines: null, // Allow unlimited lines
-                  expands: true, // Make the TextField fill the available space
-                  keyboardType:
-                      TextInputType.multiline, // Enable multiline input
-                  onSubmitted:
-                      (value) => _saveNote(), // Save the note on submission
-                  decoration: const InputDecoration(
-                    border: InputBorder.none, // Remove the bottom border
-                    hintText: "New note...", // Optional: Add a placeholder
                   ),
+                ],
+              ),
+            ),
+            if (showReflectionsButton)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    _handleReflect();
+                  },
+                  child: const Text("Reflect"),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String getRelativeDayDisplay(DateTime time) {
   final DateTime now = DateTime.now();
@@ -17,4 +20,19 @@ String getRelativeDayDisplay(DateTime time) {
   }
 
   return groupLabel;
+}
+
+Future<void> saveReflectionPrompts(List<String> prompts) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String jsonString = jsonEncode(prompts);
+  await prefs.setString('reflection_prompts', jsonString);
+}
+
+Future<List<String>> getReflectionPrompts() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? jsonString = prefs.getString('reflection_prompts');
+  if (jsonString != null) {
+    return List<String>.from(jsonDecode(jsonString));
+  }
+  return [];
 }

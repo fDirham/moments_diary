@@ -1,22 +1,66 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/find_locale.dart';
 import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/screens/home_screen.dart';
 import 'package:moments_diary/theme/theme.dart';
 import 'package:moments_diary/theme/util.dart';
+import 'package:moments_diary/utils.dart';
+import 'package:moments_diary/constants/prompts.dart' as prompt_constants;
 import 'package:provider/provider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await NoteDatabase.initialize();
+Future<void> main() async {
+  runApp(const SplashScreen());
 
-  await findSystemLocale();
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => NoteDatabase(),
-      child: const MainApp(),
-    ),
-  );
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Future.any([
+      Future(() async {
+        await NoteDatabase.initialize();
+        await prefillReflectionPrompts();
+        await findSystemLocale();
+        await Future.delayed(
+          const Duration(seconds: 5),
+        ); // Add a 5-second delay
+      }),
+      Future.delayed(const Duration(seconds: 30), () {
+        throw TimeoutException('Initialization timed out');
+      }),
+    ]);
+  } catch (e) {
+    debugPrint('Error during initialization: $e');
+    rethrow;
+  }
+
+  runApp(const MainApp());
+}
+
+Future<void> prefillReflectionPrompts() async {
+  final prompts = await getReflectionPrompts();
+  if (prompts.isEmpty) {
+    await saveReflectionPrompts(prompt_constants.defaultPrompts);
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            CircularProgressIndicator(),
+            SizedBox(height: 20),
+            Text('Loading Moments Diary...'),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class MainApp extends StatefulWidget {
@@ -35,11 +79,14 @@ class _MainAppState extends State<MainApp> {
     TextTheme textTheme = createTextTheme(context, "Inter", "Inter");
     MaterialTheme theme = MaterialTheme(textTheme);
 
-    return MaterialApp(
-      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
-      themeMode: ThemeMode.system,
-      home: HomeScreen(),
+    return ChangeNotifierProvider(
+      create: (context) => NoteDatabase(),
+      child: MaterialApp(
+        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+        darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+        themeMode: ThemeMode.system,
+        home: HomeScreen(),
+      ),
     );
   }
 }
