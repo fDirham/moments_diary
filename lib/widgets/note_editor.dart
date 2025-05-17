@@ -22,7 +22,7 @@ class NoteEditor extends StatefulWidget {
 class _NoteEditorState extends State<NoteEditor> {
   final TextEditingController _noteController =
       TextEditingController(); // Add a controller
-  DateTime createdAt = DateTime.now();
+  DateTime topDate = DateTime.now();
 
   void _saveNote() {
     widget.onSave(_noteController.text); // Call the onSave function
@@ -55,7 +55,7 @@ class _NoteEditorState extends State<NoteEditor> {
     _noteController.text = widget.startingNote?.content ?? "";
 
     if (widget.startingNote != null) {
-      createdAt = widget.startingNote!.createdAt;
+      topDate = widget.startingNote!.createdAt;
     }
 
     _noteController.addListener(() {
@@ -73,11 +73,9 @@ class _NoteEditorState extends State<NoteEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final timeCreated = DateFormat.jm(
-      Intl.getCurrentLocale(),
-    ).format(createdAt);
-    final dayCreated = getRelativeDayDisplay(createdAt);
-    final createdAtText = '$dayCreated - $timeCreated';
+    final timeCreated = DateFormat.jm(Intl.getCurrentLocale()).format(topDate);
+    final dayCreated = getRelativeDayDisplay(topDate);
+    final topDateText = '$dayCreated - $timeCreated';
     final showReflectionsButton =
         widget.startingNote == null && _noteController.text.isEmpty;
 
@@ -118,7 +116,7 @@ class _NoteEditorState extends State<NoteEditor> {
                     child: Row(
                       children: [
                         Text(
-                          createdAtText,
+                          topDateText,
                           style: TextStyle(
                             color: Theme.of(
                               context,

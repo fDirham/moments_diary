@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/find_locale.dart';
 import 'package:moments_diary/models/note_database.dart';
+import 'package:moments_diary/models/reminder_database.dart';
 import 'package:moments_diary/screens/home_screen.dart';
 import 'package:moments_diary/screens/reminders_screen.dart'; // Add this import
 import 'package:moments_diary/theme/theme.dart';
@@ -19,13 +20,11 @@ Future<void> main() async {
     await Future.any([
       Future(() async {
         await NoteDatabase.initialize();
+        await ReminderDatabase.initialize();
         await prefillReflectionPrompts();
         await findSystemLocale();
-        await Future.delayed(
-          const Duration(seconds: 5),
-        ); // Add a 5-second delay
       }),
-      Future.delayed(const Duration(seconds: 30), () {
+      Future.delayed(const Duration(seconds: 5), () {
         throw TimeoutException('Initialization timed out');
       }),
     ]);
@@ -49,15 +48,17 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
-            Text('Loading Moments Diary...'),
-          ],
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(height: 20),
+              Text('Loading Moments Diary...'),
+            ],
+          ),
         ),
       ),
     );
@@ -87,26 +88,29 @@ class _MainAppState extends State<MainApp> {
 
     return ChangeNotifierProvider(
       create: (context) => NoteDatabase(),
-      child: MaterialApp(
-        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-        darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
-        themeMode: ThemeMode.system,
-        home: Scaffold(
-          body: screens[currentPageIndex],
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: currentPageIndex,
-            onTap: (index) {
-              setState(() {
-                currentPageIndex = index;
-              });
-            },
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.alarm),
-                label: 'Reminders',
-              ),
-            ],
+      child: ChangeNotifierProvider(
+        create: (context) => ReminderDatabase(),
+        child: MaterialApp(
+          theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+          darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+          themeMode: ThemeMode.system,
+          home: Scaffold(
+            body: screens[currentPageIndex],
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: currentPageIndex,
+              onTap: (index) {
+                setState(() {
+                  currentPageIndex = index;
+                });
+              },
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.alarm),
+                  label: 'Reminders',
+                ),
+              ],
+            ),
           ),
         ),
       ),
