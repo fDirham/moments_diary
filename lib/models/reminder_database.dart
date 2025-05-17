@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:logging/logging.dart';
+import 'package:moments_diary/helpers/schedule_notification.dart';
 import 'package:moments_diary/models/reminder.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ReminderDatabase extends ChangeNotifier {
   static late Isar isar;
+  static final Logger logger = Logger('ReminderDatabase');
 
   // Initialize db
   static Future<void> initialize() async {
@@ -25,19 +28,26 @@ class ReminderDatabase extends ChangeNotifier {
     newReminder.createdAt = DateTime.now();
 
     // save in db
-    await isar.writeTxn(() => isar.reminders.put(newReminder));
+    final newId = await isar.writeTxn(
+      () async => await isar.reminders.put(newReminder),
+    );
 
     // reread to update changes
     await fetchReminders();
+
+    // Schedule notification
+    await scheduleNotification(newId, content, toPublishAt);
   }
 
   // Get notes
   Future<void> fetchReminders() async {
     List<Reminder> fetched =
-        await isar.reminders.where().sortByToPublishAt().findAll();
+        await isar.reminders.where().sortByToPublishAtDesc().findAll();
 
     currentReminders.clear();
     currentReminders.addAll(fetched);
+
+    logger.info("Fetched ${currentReminders.toString()} reminders");
     notifyListeners();
   }
 
@@ -55,6 +65,9 @@ class ReminderDatabase extends ChangeNotifier {
 
       await isar.writeTxn(() => isar.reminders.put(existing));
       await fetchReminders();
+
+      await cancelNotification(id);
+      await scheduleNotification(id, newContent, newToPublishAt);
     }
   }
 
@@ -62,5 +75,6 @@ class ReminderDatabase extends ChangeNotifier {
   Future<void> deleteReminder(int id) async {
     await isar.writeTxn(() => isar.reminders.delete(id));
     await fetchReminders();
+    await cancelNotification(id);
   }
 }

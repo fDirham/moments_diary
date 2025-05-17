@@ -72,9 +72,12 @@ class _ReminderEditorState extends State<ReminderEditor> {
         userRes.minute,
       );
 
-      if (newDateTime.isBefore(
+      // final isBefore = false;
+      final isBefore = newDateTime.isBefore(
         DateTime.now().add(const Duration(minutes: 5)),
-      )) {
+      );
+
+      if (isBefore) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Cannot set a time this early.')),
@@ -94,7 +97,7 @@ class _ReminderEditorState extends State<ReminderEditor> {
     _contentController.text = widget.startingReminder?.content ?? "";
 
     if (widget.startingReminder != null) {
-      workingToPublishAt = widget.startingReminder!.createdAt;
+      workingToPublishAt = widget.startingReminder!.toPublishAt;
     } else {
       workingToPublishAt = DateTime.now().add(const Duration(minutes: 20));
     }

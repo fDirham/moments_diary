@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/find_locale.dart';
+import 'package:logging/logging.dart';
 import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/models/reminder_database.dart';
 import 'package:moments_diary/screens/home_screen.dart';
@@ -11,11 +14,25 @@ import 'package:moments_diary/theme/util.dart';
 import 'package:moments_diary/utils.dart';
 import 'package:moments_diary/constants/prompts.dart' as prompt_constants;
 import 'package:provider/provider.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 Future<void> main() async {
   runApp(const SplashScreen());
 
+  await initializeStuff();
+
+  runApp(const MainApp());
+}
+
+Future<void> initializeStuff() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   try {
     await Future.any([
       Future(() async {
@@ -23,6 +40,12 @@ Future<void> main() async {
         await ReminderDatabase.initialize();
         await prefillReflectionPrompts();
         await findSystemLocale();
+
+        tz.initializeTimeZones();
+        final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+        tz.setLocalLocation(tz.getLocation(timeZoneName));
+
+        await initializeNotifications();
       }),
       Future.delayed(const Duration(seconds: 5), () {
         throw TimeoutException('Initialization timed out');
@@ -32,8 +55,29 @@ Future<void> main() async {
     debugPrint('Error during initialization: $e');
     rethrow;
   }
+}
 
-  runApp(const MainApp());
+Future<void> initializeNotifications() async {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+  final DarwinInitializationSettings initializationSettingsDarwin =
+      DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsDarwin,
+  );
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (pl) => print("TODO"),
+  );
 }
 
 Future<void> prefillReflectionPrompts() async {

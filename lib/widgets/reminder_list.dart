@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moments_diary/widgets/reminder_list_row.dart';
 import 'package:provider/provider.dart';
 import 'package:moments_diary/models/reminder.dart';
 import 'package:moments_diary/models/reminder_database.dart';
@@ -25,22 +26,11 @@ class ReminderList extends StatelessWidget {
       );
     }
 
-    return ListView.separated(
+    return ListView.builder(
       itemCount: reminders.length,
-      separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) {
         final reminder = reminders[index];
-        return ListTile(
-          title: Text(reminder.content),
-          subtitle: Text(reminder.toPublishAt.toString()),
-          trailing: Text(
-            // Format the date as you like
-            reminder.toPublishAt.toLocal().toString().split(
-              ' ',
-            )[0], // Example: "2023-10-01"
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
-        );
+        return ReminderListRow(currReminder: reminder);
       },
     );
   }
