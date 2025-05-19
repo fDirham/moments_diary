@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:moments_diary/constants/logging_related.dart';
+import 'package:moments_diary/method_channels/schedule_recurring_ios_notif_mc.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 Future<void> scheduleNotification(
@@ -19,19 +20,12 @@ Future<void> scheduleNotification(
   }
 
   if (daily) {
-    await flutterLocalNotificationsPlugin.periodicallyShow(
-      id,
-      'Moments Reminder',
+    await scheduleRecurringIOSNotifMC(
+      "Moments Reminder",
       content,
-      RepeatInterval.daily,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'your channel id',
-          'your channel name',
-          channelDescription: 'your channel description',
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      toPublishAt.hour,
+      toPublishAt.minute,
+      id,
     );
   } else {
     await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -56,4 +50,5 @@ Future<void> cancelNotification(int id) async {
       FlutterLocalNotificationsPlugin();
 
   await flutterLocalNotificationsPlugin.cancel(id);
+  await cancelRecurringIOSNotifMC(id);
 }
