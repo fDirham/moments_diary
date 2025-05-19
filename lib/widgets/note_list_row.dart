@@ -38,7 +38,7 @@ class _NoteListRowState extends State<NoteListRow> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
                 currNote.content,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 18),
               ),
             ),
             Align(
@@ -47,7 +47,7 @@ class _NoteListRowState extends State<NoteListRow> {
                 timestampStr,
                 textAlign: TextAlign.end,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: Theme.of(
                     context,
                   ).colorScheme.onSurface.withValues(alpha: 0.5),

@@ -16,7 +16,8 @@ class NoteListGroupHeader extends StatelessWidget {
               groupLabel,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSecondary,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
               ),
             ),
           ],

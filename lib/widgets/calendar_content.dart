@@ -101,6 +101,9 @@ class _CalendarContentState extends State<CalendarContent> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final dayString = DateFormat.yMMMEd(
+      Intl.getCurrentLocale(),
+    ).format(_selectedDay);
 
     if (_isEmpty) {
       return Center(
@@ -119,94 +122,100 @@ class _CalendarContentState extends State<CalendarContent> {
         }
       },
       child: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              TableCalendar(
-                focusedDay: _focusedDay,
-                firstDay: _startDate,
-                lastDay: _endDate,
-                onPageChanged: (focusedDay) {
-                  _focusedDay = focusedDay;
-                  loadMonthlyActivityDoc();
-                },
-                calendarFormat: CalendarFormat.month,
-                headerVisible: true,
-                headerStyle: const HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: false,
-                  titleTextStyle: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay =
-                        focusedDay; // update `_focusedDay` here as well
-                  });
-                },
-                calendarStyle: CalendarStyle(
-                  defaultTextStyle: TextStyle(color: colorScheme.onSurface),
-                  todayDecoration: BoxDecoration(color: Colors.transparent),
-                  todayTextStyle: TextStyle(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  selectedDecoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  selectedTextStyle: TextStyle(
-                    color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                calendarBuilders: CalendarBuilders(
-                  markerBuilder: (context, day, events) {
-                    if (day == _selectedDay || isSameDay(_selectedDay, day)) {
-                      return null;
-                    }
-
-                    if (_monthlyActivityDoc == null) {
-                      return null;
-                    }
-
-                    final dailyActivity =
-                        _monthlyActivityDoc!.dailyActivities[day.day];
-
-                    if (dailyActivity == null) {
-                      return null;
-                    }
-                    final numNotes = dailyActivity.numNotes;
-
-                    if (numNotes == 0) {
-                      return null;
-                    }
-                    return Container(
-                      margin: const EdgeInsets.all(4.0),
-                      width: 10,
-                      height: 3,
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    );
-                  },
+        child: Column(
+          children: [
+            Text(
+              dayString,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TableCalendar(
+              focusedDay: _focusedDay,
+              firstDay: _startDate,
+              lastDay: _endDate,
+              onPageChanged: (focusedDay) {
+                _focusedDay = focusedDay;
+                loadMonthlyActivityDoc();
+              },
+              calendarFormat: CalendarFormat.month,
+              headerVisible: true,
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: false,
+                titleTextStyle: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
                 ),
               ),
-              if (_monthlyActivityDoc != null)
-                DayInfo(
-                  monthlyActivityDoc: _monthlyActivityDoc!,
-                  day: _selectedDay.day,
-                  dayNotes: _dayNotes,
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDay, day);
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay; // update `_focusedDay` here as well
+                });
+              },
+              calendarStyle: CalendarStyle(
+                defaultTextStyle: TextStyle(color: colorScheme.onSurface),
+                todayDecoration: BoxDecoration(color: Colors.transparent),
+                todayTextStyle: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
                 ),
-            ],
-          ),
+                selectedDecoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+                selectedTextStyle: TextStyle(
+                  color: colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, day, events) {
+                  if (day == _selectedDay || isSameDay(_selectedDay, day)) {
+                    return null;
+                  }
+
+                  if (_monthlyActivityDoc == null) {
+                    return null;
+                  }
+
+                  final dailyActivity =
+                      _monthlyActivityDoc!.dailyActivities[day.day];
+
+                  if (dailyActivity == null) {
+                    return null;
+                  }
+                  final numNotes = dailyActivity.numNotes;
+
+                  if (numNotes == 0) {
+                    return null;
+                  }
+                  return Container(
+                    margin: const EdgeInsets.all(4.0),
+                    width: 10,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (_monthlyActivityDoc != null)
+              DayInfo(
+                monthlyActivityDoc: _monthlyActivityDoc!,
+                day: _selectedDay.day,
+                dayNotes: _dayNotes,
+              ),
+          ],
         ),
       ),
     );
@@ -233,43 +242,41 @@ class DayInfo extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final dayDate = monthlyActivityDoc.getDailyActivityDate(dailyActivity);
-    final dayString = DateFormat.yMMMEd(
-      Intl.getCurrentLocale(),
-    ).format(dayDate);
-
     var numNotesText = "Notes: ${dailyActivity.numNotes}";
     var hasReflectionText =
         "Reflections: ${dailyActivity.hasReflection ? "Yes" : "No"}";
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              dayString,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  numNotesText,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  hasReflectionText,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              numNotesText,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            Text(
-              hasReflectionText,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            const SizedBox(height: 16),
-            if (dayNotes.isNotEmpty) NoteList(notes: dayNotes),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 16),
+          if (dayNotes.isNotEmpty) NoteList(notes: dayNotes),
+        ],
       ),
     );
   }

@@ -50,7 +50,7 @@ class _ReminderListRowState extends State<ReminderListRow> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   currReminder.content,
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
               SizedBox(
@@ -66,7 +66,7 @@ class _ReminderListRowState extends State<ReminderListRow> {
                       timestampStr,
                       textAlign: TextAlign.end,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Theme.of(
                           context,
                         ).colorScheme.onSurface.withAlpha(120),
