@@ -21,11 +21,16 @@ class ReminderDatabase extends ChangeNotifier {
   final List<Reminder> currentReminders = [];
 
   // add note
-  Future<void> addReminder(String content, DateTime toPublishAt) async {
+  Future<void> addReminder(
+    String content,
+    DateTime toPublishAt,
+    bool recurring,
+  ) async {
     var newReminder = Reminder();
     newReminder.content = content;
     newReminder.toPublishAt = toPublishAt;
     newReminder.createdAt = DateTime.now();
+    newReminder.recurring = recurring;
 
     // save in db
     final newId = await isar.writeTxn(
@@ -36,7 +41,7 @@ class ReminderDatabase extends ChangeNotifier {
     await fetchReminders();
 
     // Schedule notification
-    await scheduleNotification(newId, content, toPublishAt);
+    await scheduleNotification(newId, content, toPublishAt, recurring);
   }
 
   // Get notes
@@ -56,18 +61,20 @@ class ReminderDatabase extends ChangeNotifier {
     int id,
     String newContent,
     DateTime newToPublishAt,
+    bool newRecurring,
   ) async {
     final existing = await isar.reminders.get(id);
 
     if (existing != null) {
       existing.content = newContent;
       existing.toPublishAt = newToPublishAt;
+      existing.recurring = newRecurring;
 
       await isar.writeTxn(() => isar.reminders.put(existing));
       await fetchReminders();
 
       await cancelNotification(id);
-      await scheduleNotification(id, newContent, newToPublishAt);
+      await scheduleNotification(id, newContent, newToPublishAt, newRecurring);
     }
   }
 

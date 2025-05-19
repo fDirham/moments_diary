@@ -267,7 +267,7 @@ class DayInfo extends StatelessWidget {
               style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 16),
-            NoteList(notes: dayNotes),
+            if (dayNotes.isNotEmpty) NoteList(notes: dayNotes),
           ],
         ),
       ),

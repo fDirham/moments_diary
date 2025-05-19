@@ -10,7 +10,7 @@ class EditReminderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void onSave(String newText, DateTime toPublishAt) {
+    void onSave(String newText, DateTime toPublishAt, bool recurring) {
       final ReminderDatabase reminderDB = context.read<ReminderDatabase>();
       if (newText.isEmpty) {
         reminderDB.deleteReminder(reminder.id);
@@ -18,7 +18,7 @@ class EditReminderScreen extends StatelessWidget {
       }
 
       // Save the note to the database
-      reminderDB.updateReminder(reminder.id, newText, toPublishAt);
+      reminderDB.updateReminder(reminder.id, newText, toPublishAt, recurring);
     }
 
     void onDelete() {

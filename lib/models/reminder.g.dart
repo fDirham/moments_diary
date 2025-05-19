@@ -27,8 +27,13 @@ const ReminderSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'toPublishAt': PropertySchema(
+    r'recurring': PropertySchema(
       id: 2,
+      name: r'recurring',
+      type: IsarType.bool,
+    ),
+    r'toPublishAt': PropertySchema(
+      id: 3,
       name: r'toPublishAt',
       type: IsarType.dateTime,
     )
@@ -65,7 +70,8 @@ void _reminderSerialize(
 ) {
   writer.writeString(offsets[0], object.content);
   writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeDateTime(offsets[2], object.toPublishAt);
+  writer.writeBool(offsets[2], object.recurring);
+  writer.writeDateTime(offsets[3], object.toPublishAt);
 }
 
 Reminder _reminderDeserialize(
@@ -78,7 +84,8 @@ Reminder _reminderDeserialize(
   object.content = reader.readString(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.toPublishAt = reader.readDateTime(offsets[2]);
+  object.recurring = reader.readBool(offsets[2]);
+  object.toPublishAt = reader.readDateTime(offsets[3]);
   return object;
 }
 
@@ -94,6 +101,8 @@ P _reminderDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
+      return (reader.readBool(offset)) as P;
+    case 3:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -424,6 +433,16 @@ extension ReminderQueryFilter
     });
   }
 
+  QueryBuilder<Reminder, Reminder, QAfterFilterCondition> recurringEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'recurring',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Reminder, Reminder, QAfterFilterCondition> toPublishAtEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -510,6 +529,18 @@ extension ReminderQuerySortBy on QueryBuilder<Reminder, Reminder, QSortBy> {
     });
   }
 
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByRecurring() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'recurring', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByRecurringDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'recurring', Sort.desc);
+    });
+  }
+
   QueryBuilder<Reminder, Reminder, QAfterSortBy> sortByToPublishAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'toPublishAt', Sort.asc);
@@ -561,6 +592,18 @@ extension ReminderQuerySortThenBy
     });
   }
 
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByRecurring() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'recurring', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByRecurringDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'recurring', Sort.desc);
+    });
+  }
+
   QueryBuilder<Reminder, Reminder, QAfterSortBy> thenByToPublishAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'toPublishAt', Sort.asc);
@@ -589,6 +632,12 @@ extension ReminderQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Reminder, Reminder, QDistinct> distinctByRecurring() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'recurring');
+    });
+  }
+
   QueryBuilder<Reminder, Reminder, QDistinct> distinctByToPublishAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'toPublishAt');
@@ -613,6 +662,12 @@ extension ReminderQueryProperty
   QueryBuilder<Reminder, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<Reminder, bool, QQueryOperations> recurringProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'recurring');
     });
   }
 

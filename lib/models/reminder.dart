@@ -7,6 +7,7 @@ class Reminder {
   late String content;
   late DateTime toPublishAt;
   DateTime createdAt = DateTime.now();
+  late bool recurring;
 
   @override
   String toString() {

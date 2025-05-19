@@ -26,7 +26,9 @@ class _ReminderListRowState extends State<ReminderListRow> {
   Widget build(BuildContext context) {
     final currReminder = widget.currReminder;
 
-    final isInPast = currReminder.toPublishAt.isBefore(DateTime.now());
+    final isInPast =
+        !currReminder.recurring &&
+        currReminder.toPublishAt.isBefore(DateTime.now());
 
     final String publishDay = getRelativeDayDisplay(currReminder.toPublishAt);
     final String publishTime = DateFormat.jm(
@@ -50,17 +52,26 @@ class _ReminderListRowState extends State<ReminderListRow> {
                   style: TextStyle(fontSize: 16),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  timestampStr,
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withAlpha(120),
-                  ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (currReminder.recurring)
+                      Icon(Icons.restore)
+                    else
+                      Container(),
+                    Text(
+                      timestampStr,
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withAlpha(120),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -6,6 +6,7 @@ Future<void> scheduleNotification(
   int id,
   String content,
   DateTime toPublishAt,
+  bool daily,
 ) async {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -17,20 +18,37 @@ Future<void> scheduleNotification(
     return;
   }
 
-  await flutterLocalNotificationsPlugin.zonedSchedule(
-    id,
-    'Moments Reminder',
-    content,
-    tz.TZDateTime.from(toPublishAt, tz.local),
-    const NotificationDetails(
-      android: AndroidNotificationDetails(
-        'your channel id',
-        'your channel name',
-        channelDescription: 'your channel description',
+  if (daily) {
+    await flutterLocalNotificationsPlugin.periodicallyShow(
+      id,
+      'Moments Reminder',
+      content,
+      RepeatInterval.daily,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'your channel id',
+          'your channel name',
+          channelDescription: 'your channel description',
+        ),
       ),
-    ),
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-  );
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  } else {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id,
+      'Moments Reminder',
+      content,
+      tz.TZDateTime.from(toPublishAt, tz.local),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'your channel id',
+          'your channel name',
+          channelDescription: 'your channel description',
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
 }
 
 Future<void> cancelNotification(int id) async {

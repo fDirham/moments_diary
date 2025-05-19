@@ -4,7 +4,8 @@ import 'package:moments_diary/models/reminder.dart';
 import 'package:moments_diary/utils.dart';
 
 class ReminderEditor extends StatefulWidget {
-  final void Function(String newText, DateTime toPublishAt) onSave;
+  final void Function(String newText, DateTime toPublishAt, bool recurring)
+  onSave;
   final void Function() onDelete;
   final Reminder? startingReminder;
 
@@ -23,11 +24,13 @@ class _ReminderEditorState extends State<ReminderEditor> {
   final TextEditingController _contentController =
       TextEditingController(); // Add a controller
   DateTime workingToPublishAt = DateTime.now();
+  bool workingRecurring = false;
 
   void _saveReminder() {
     widget.onSave(
       _contentController.text,
       workingToPublishAt,
+      workingRecurring,
     ); // Call the onSave function
   }
 
@@ -73,9 +76,7 @@ class _ReminderEditorState extends State<ReminderEditor> {
       );
 
       // final isBefore = false;
-      final isBefore = newDateTime.isBefore(
-        DateTime.now().add(const Duration(minutes: 5)),
-      );
+      final isBefore = newDateTime.isBefore(DateTime.now());
 
       if (isBefore) {
         if (!mounted) return;
@@ -98,6 +99,7 @@ class _ReminderEditorState extends State<ReminderEditor> {
 
     if (widget.startingReminder != null) {
       workingToPublishAt = widget.startingReminder!.toPublishAt;
+      workingRecurring = widget.startingReminder!.recurring;
     } else {
       workingToPublishAt = DateTime.now().add(const Duration(minutes: 20));
     }
@@ -155,6 +157,12 @@ class _ReminderEditorState extends State<ReminderEditor> {
                 timeText: timeCreated,
                 onDayTap: _changeDate,
                 onTimeTap: _changeTime,
+                isRecurring: workingRecurring,
+                onRecurringChange: (value) {
+                  setState(() {
+                    workingRecurring = value; // Update the recurring state
+                  });
+                },
               ),
               Expanded(
                 child: TextField(
@@ -185,6 +193,8 @@ class WorkingDateInput extends StatelessWidget {
   final String timeText;
   final void Function() onDayTap;
   final void Function() onTimeTap;
+  final bool isRecurring;
+  final void Function(bool) onRecurringChange;
 
   const WorkingDateInput({
     super.key,
@@ -192,6 +202,8 @@ class WorkingDateInput extends StatelessWidget {
     required this.timeText,
     required this.onDayTap,
     required this.onTimeTap,
+    required this.isRecurring,
+    required this.onRecurringChange,
   });
 
   @override
@@ -245,6 +257,17 @@ class WorkingDateInput extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          const SizedBox(width: 18),
+          Icon(Icons.restore),
+          const SizedBox(width: 6),
+          Switch(
+            value: isRecurring,
+            onChanged: (value) {
+              onRecurringChange(value); // Call the onRecurringChange function
+              // Handle switch change
+            },
+            activeColor: Theme.of(context).colorScheme.primary,
           ),
         ],
       ),

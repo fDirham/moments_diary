@@ -13,8 +13,7 @@ class ReminderList extends StatelessWidget {
     final List<Reminder> reminders = reminderDB.currentReminders;
 
     if (reminders.isEmpty) {
-      Padding(
-        padding: EdgeInsets.only(top: 32),
+      return Center(
         child: Text(
           "No reminders available.\nAdd a new one to get started!",
           style: TextStyle(
