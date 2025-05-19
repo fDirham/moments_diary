@@ -4,6 +4,7 @@ import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/screens/new_note_screen.dart';
 import 'package:moments_diary/screens/reflection_prompts_screen.dart';
 import 'package:moments_diary/screens/settings_screen.dart'; // Import the settings screen
+import 'package:moments_diary/widgets/calendar_content.dart';
 import 'package:moments_diary/widgets/home_header.dart';
 import 'package:moments_diary/widgets/note_list.dart';
 import 'package:provider/provider.dart';
@@ -74,9 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
             HomeHeader(currDayStr: currDayStr),
             CustomTabBar(),
             Expanded(
-              child: TabBarView(
-                children: [NoteList(), Center(child: Text("Calendar Content"))],
-              ),
+              child: TabBarView(children: [NoteList(), CalendarContent()]),
             ),
           ],
         ),
