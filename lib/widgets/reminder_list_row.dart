@@ -34,7 +34,8 @@ class _ReminderListRowState extends State<ReminderListRow> {
     final String publishTime = DateFormat.jm(
       Intl.getCurrentLocale(),
     ).format(currReminder.toPublishAt);
-    final String timestampStr = "$publishDay - $publishTime";
+    final String timestampStr =
+        currReminder.recurring ? publishTime : "$publishDay - $publishTime";
 
     return InkWell(
       onTap: () => editReminder(currReminder),
