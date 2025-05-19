@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:moments_diary/models/note.dart';
-import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/utils.dart';
 import 'package:moments_diary/widgets/note_list_group_header.dart';
 import 'package:moments_diary/widgets/note_list_row.dart';
-import 'package:provider/provider.dart';
 
 class NoteList extends StatefulWidget {
-  const NoteList({super.key});
+  final List<Note> notes;
+
+  const NoteList({super.key, required this.notes});
 
   @override
   State<NoteList> createState() => _NoteListState();
@@ -41,12 +41,10 @@ class _NoteListState extends State<NoteList> {
 
   @override
   Widget build(BuildContext context) {
-    final NoteDatabase noteDB = context.watch<NoteDatabase>();
-    List<Note> currNotes = noteDB.currentNotes;
-    putNotesIntoGroups(currNotes);
-    final groupedNotes = putNotesIntoGroups(currNotes);
+    putNotesIntoGroups(widget.notes);
+    final groupedNotes = putNotesIntoGroups(widget.notes);
 
-    return currNotes.isEmpty
+    return widget.notes.isEmpty
         ? Padding(
           padding: EdgeInsets.only(top: 32),
           child: Text(
@@ -80,6 +78,7 @@ class _NoteListState extends State<NoteList> {
             indent: 16,
             endIndent: 16,
           ),
+          shrinkWrap: true,
           itemBuilder: (context, element) {
             final currNote = element["note"];
 

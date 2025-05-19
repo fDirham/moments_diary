@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:moments_diary/models/note.dart';
 import 'package:moments_diary/models/note_database.dart';
 import 'package:moments_diary/screens/new_note_screen.dart';
 import 'package:moments_diary/screens/reflection_prompts_screen.dart';
@@ -38,6 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final NoteDatabase noteDB = context.watch<NoteDatabase>();
+    List<Note> currNotes = noteDB.currentNotes;
+
     String currDayStr = DateFormat.MMMd(
       Intl.getCurrentLocale(),
     ).format(DateTime.now());
@@ -75,7 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
             HomeHeader(currDayStr: currDayStr),
             CustomTabBar(),
             Expanded(
-              child: TabBarView(children: [NoteList(), CalendarContent()]),
+              child: TabBarView(
+                children: [NoteList(notes: currNotes), CalendarContent()],
+              ),
             ),
           ],
         ),
