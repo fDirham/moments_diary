@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:moments_diary/models/note.dart';
+import 'package:moments_diary/utils.dart';
 import 'package:path_provider/path_provider.dart';
 
 class NoteDatabase extends ChangeNotifier {
@@ -16,16 +17,24 @@ class NoteDatabase extends ChangeNotifier {
   final List<Note> currentNotes = [];
 
   // add note
-  Future<void> addNote(String newContent) async {
+  Future<void> addNote(String newContent, bool isReflection) async {
     var newNote = Note();
     newNote.content = newContent;
     newNote.createdAt = DateTime.now();
+    newNote.isReflection = isReflection;
 
     // save in db
     await isar.writeTxn(() => isar.notes.put(newNote));
 
     // reread to update changes
     await fetchNotes();
+
+    // Updates calendar prefs
+    final startDate = await getCalendarStartDate();
+    if (startDate == null) {
+      await setCalendarStartDate(newNote.createdAt);
+    }
+    await setCalendarEndDate(newNote.createdAt);
   }
 
   // Get notes

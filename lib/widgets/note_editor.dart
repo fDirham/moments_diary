@@ -4,7 +4,7 @@ import 'package:moments_diary/models/note.dart';
 import 'package:moments_diary/utils.dart';
 
 class NoteEditor extends StatefulWidget {
-  final void Function(String newText) onSave;
+  final void Function(String newText, bool isReflection) onSave;
   final void Function() onDelete;
   final Note? startingNote;
 
@@ -23,9 +23,13 @@ class _NoteEditorState extends State<NoteEditor> {
   final TextEditingController _noteController =
       TextEditingController(); // Add a controller
   DateTime topDate = DateTime.now();
+  bool isReflection = false;
 
   void _saveNote() {
-    widget.onSave(_noteController.text); // Call the onSave function
+    widget.onSave(
+      _noteController.text,
+      isReflection,
+    ); // Call the onSave function
   }
 
   void _deleteNote() {
@@ -46,6 +50,8 @@ class _NoteEditorState extends State<NoteEditor> {
         offset: prompts.length,
       );
     }
+
+    isReflection = true; // Set the isReflection flag to true
   }
 
   @override

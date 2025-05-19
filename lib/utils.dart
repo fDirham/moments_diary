@@ -36,3 +36,31 @@ Future<List<String>> getReflectionPrompts() async {
   }
   return [];
 }
+
+Future<void> setCalendarStartDate(DateTime date) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('calendar_start_date', date.toIso8601String());
+}
+
+Future<DateTime?> getCalendarStartDate() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? dateString = prefs.getString('calendar_start_date');
+  if (dateString != null) {
+    return DateTime.parse(dateString);
+  }
+  return null;
+}
+
+Future<void> setCalendarEndDate(DateTime date) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('calendar_end_date', date.toIso8601String());
+}
+
+Future<DateTime?> getCalendarEndDate() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? dateString = prefs.getString('calendar_end_date');
+  if (dateString != null) {
+    return DateTime.parse(dateString);
+  }
+  return null;
+}

@@ -7,4 +7,5 @@ class Note {
   late String content;
   DateTime createdAt = DateTime.now();
   DateTime updatedAt = DateTime.now();
+  late bool isReflection;
 }

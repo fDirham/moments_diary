@@ -27,8 +27,13 @@ const NoteSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'updatedAt': PropertySchema(
+    r'isReflection': PropertySchema(
       id: 2,
+      name: r'isReflection',
+      type: IsarType.bool,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 3,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -65,7 +70,8 @@ void _noteSerialize(
 ) {
   writer.writeString(offsets[0], object.content);
   writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeDateTime(offsets[2], object.updatedAt);
+  writer.writeBool(offsets[2], object.isReflection);
+  writer.writeDateTime(offsets[3], object.updatedAt);
 }
 
 Note _noteDeserialize(
@@ -78,7 +84,8 @@ Note _noteDeserialize(
   object.content = reader.readString(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.updatedAt = reader.readDateTime(offsets[2]);
+  object.isReflection = reader.readBool(offsets[2]);
+  object.updatedAt = reader.readDateTime(offsets[3]);
   return object;
 }
 
@@ -94,6 +101,8 @@ P _noteDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
+      return (reader.readBool(offset)) as P;
+    case 3:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -421,6 +430,16 @@ extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Note, Note, QAfterFilterCondition> isReflectionEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isReflection',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterFilterCondition> updatedAtEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -504,6 +523,18 @@ extension NoteQuerySortBy on QueryBuilder<Note, Note, QSortBy> {
     });
   }
 
+  QueryBuilder<Note, Note, QAfterSortBy> sortByIsReflection() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReflection', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterSortBy> sortByIsReflectionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReflection', Sort.desc);
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterSortBy> sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -554,6 +585,18 @@ extension NoteQuerySortThenBy on QueryBuilder<Note, Note, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Note, Note, QAfterSortBy> thenByIsReflection() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReflection', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterSortBy> thenByIsReflectionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isReflection', Sort.desc);
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterSortBy> thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -581,6 +624,12 @@ extension NoteQueryWhereDistinct on QueryBuilder<Note, Note, QDistinct> {
     });
   }
 
+  QueryBuilder<Note, Note, QDistinct> distinctByIsReflection() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isReflection');
+    });
+  }
+
   QueryBuilder<Note, Note, QDistinct> distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
@@ -604,6 +653,12 @@ extension NoteQueryProperty on QueryBuilder<Note, Note, QQueryProperty> {
   QueryBuilder<Note, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
+    });
+  }
+
+  QueryBuilder<Note, bool, QQueryOperations> isReflectionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isReflection');
     });
   }
 

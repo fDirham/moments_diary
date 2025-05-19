@@ -11,7 +11,7 @@ class EditNoteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void saveNote(String newText) {
+    void saveNote(String newText, bool isReflection) {
       final NoteDatabase noteDB = context.read<NoteDatabase>();
 
       if (newText.isEmpty) {

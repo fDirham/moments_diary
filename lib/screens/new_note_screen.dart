@@ -11,14 +11,14 @@ class NewNoteScreen extends StatefulWidget {
 }
 
 class _NewNoteScreenState extends State<NewNoteScreen> {
-  void saveNote(String newText) {
+  void saveNote(String newText, bool isReflection) {
     if (newText.isEmpty) {
       return;
     }
 
     // Save the note to the database
     final NoteDatabase noteDB = context.read<NoteDatabase>();
-    noteDB.addNote(newText);
+    noteDB.addNote(newText, isReflection);
   }
 
   void deleteNote() {
