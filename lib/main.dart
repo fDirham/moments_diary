@@ -15,6 +15,7 @@ import 'package:moments_diary/constants/prompts.dart' as prompt_constants;
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   runApp(const SplashScreen());
@@ -39,6 +40,7 @@ Future<void> initializeStuff() async {
         await ReminderDatabase.initialize();
         await prefillReflectionPrompts();
         await findSystemLocale();
+        initializeDateFormatting();
 
         tz.initializeTimeZones();
         final String timeZoneName = await FlutterTimezone.getLocalTimezone();
@@ -133,6 +135,7 @@ class _MainAppState extends State<MainApp> {
       child: ChangeNotifierProvider(
         create: (context) => ReminderDatabase(),
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           theme: brightness == Brightness.light ? theme.light() : theme.dark(),
           darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
           themeMode: ThemeMode.system,
