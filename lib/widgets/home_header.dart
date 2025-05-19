@@ -19,7 +19,8 @@ class HomeHeader extends StatelessWidget {
               "Diary",
               style: TextStyle(
                 fontSize: 28,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
+                fontFamily: "SFPro",
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),

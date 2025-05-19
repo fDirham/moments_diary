@@ -33,3 +33,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: SFPro
+      fonts:
+        - asset: fonts/SF-Pro-Rounded-Regular.otf
+        - asset: fonts/SF-Pro-Rounded-Bold.otf
+          weight: 700

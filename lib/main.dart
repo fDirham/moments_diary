@@ -10,7 +10,6 @@ import 'package:moments_diary/models/reminder_database.dart';
 import 'package:moments_diary/screens/home_screen.dart';
 import 'package:moments_diary/screens/reminders_screen.dart'; // Add this import
 import 'package:moments_diary/theme/theme.dart';
-import 'package:moments_diary/theme/util.dart';
 import 'package:moments_diary/utils.dart';
 import 'package:moments_diary/constants/prompts.dart' as prompt_constants;
 import 'package:provider/provider.dart';
@@ -127,8 +126,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     final brightness = View.of(context).platformDispatcher.platformBrightness;
-    TextTheme textTheme = createTextTheme(context, "Inter", "Inter");
-    MaterialTheme theme = MaterialTheme(textTheme);
+    MaterialTheme theme = MaterialTheme();
 
     return ChangeNotifierProvider(
       create: (context) => NoteDatabase(),
